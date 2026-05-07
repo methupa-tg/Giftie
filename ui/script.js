@@ -6,6 +6,12 @@ const sendBtn = document.getElementById("sendBtn");
 
 let history = [];
 const _urlParams = new URLSearchParams(window.location.search);
+if (_urlParams.get("reset")) {
+  try {
+    localStorage.removeItem("thyaga_session_id");
+    localStorage.removeItem("thyaga_chat_history");
+  } catch(e) {}
+}
 let sessionId = _urlParams.get("session_id") || localStorage.getItem("thyaga_session_id") || null;
 
 if (sessionId) {
@@ -13,7 +19,7 @@ if (sessionId) {
     const savedHistory = JSON.parse(localStorage.getItem("thyaga_chat_history") || "[]");
     if (savedHistory.length > 0) {
       savedHistory.forEach(msg => appendMessage(
-        msg.role, msg.content,
+        msg.role === "assistant" ? "bot" : msg.role, msg.content,
         msg.images || [], msg.links || [], msg.page_links || [],
         msg.show_browse || false, msg.show_merchant_btns || false, msg.show_contact_btns || false
       ));

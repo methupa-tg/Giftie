@@ -76,7 +76,8 @@
   refreshBtn.onmouseup = () => {
     refreshBtn.style.transform = "scale(1)";
     refreshBtn.style.background = "rgba(255,255,255,0.15)";
-    iframe.src = getIframeSrc();
+    localStorage.removeItem(STORAGE_KEY);
+    iframe.src = BASE_URL + "?reset=1&t=" + Date.now();
   };
   refreshBtn.onmouseleave = () => {
     refreshBtn.style.transform = "scale(1)";
