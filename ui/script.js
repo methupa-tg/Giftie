@@ -12,7 +12,11 @@ if (sessionId) {
   try {
     const savedHistory = JSON.parse(localStorage.getItem("thyaga_chat_history") || "[]");
     if (savedHistory.length > 0) {
-      savedHistory.forEach(msg => appendMessage(msg.role, msg.content));
+      savedHistory.forEach(msg => appendMessage(
+        msg.role, msg.content,
+        msg.images || [], msg.links || [], msg.page_links || [],
+        msg.show_browse || false, msg.show_merchant_btns || false, msg.show_contact_btns || false
+      ));
       history = savedHistory;
       document.getElementById("suggestions").style.display = "none";
       document.getElementById("privacyNotice").style.display = "none";
@@ -56,8 +60,18 @@ function sendMessage() {
         try { localStorage.setItem("thyaga_session_id", data.session_id); } catch(e) {}
       }
       const reply = data.reply || "Sorry, something went wrong.";
-      appendMessage("bot", reply, data.images || [], data.links || [], data.page_links || [], data.show_browse || false, data.show_merchant_btns || false, data.show_contact_btns || false);
-      history.push({ role: "assistant", content: reply });
+      const botMsg = {
+        role: "assistant",
+        content: reply,
+        images: data.images || [],
+        links: data.links || [],
+        page_links: data.page_links || [],
+        show_browse: data.show_browse || false,
+        show_merchant_btns: data.show_merchant_btns || false,
+        show_contact_btns: data.show_contact_btns || false
+      };
+      appendMessage("bot", reply, botMsg.images, botMsg.links, botMsg.page_links, botMsg.show_browse, botMsg.show_merchant_btns, botMsg.show_contact_btns);
+      history.push(botMsg);
       try { localStorage.setItem("thyaga_chat_history", JSON.stringify(history)); } catch(e) {}
     })
     .catch(() => {
