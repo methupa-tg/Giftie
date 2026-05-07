@@ -8,6 +8,19 @@ let history = [];
 const _urlParams = new URLSearchParams(window.location.search);
 let sessionId = _urlParams.get("session_id") || localStorage.getItem("thyaga_session_id") || null;
 
+if (sessionId) {
+  try {
+    const savedHistory = JSON.parse(localStorage.getItem("thyaga_chat_history") || "[]");
+    if (savedHistory.length > 0) {
+      savedHistory.forEach(msg => appendMessage(msg.role, msg.content));
+      history = savedHistory;
+      document.getElementById("suggestions").style.display = "none";
+      document.getElementById("privacyNotice").style.display = "none";
+      scrollToBottom();
+    }
+  } catch(e) {}
+}
+
 userInput.addEventListener("keydown", (e) => {
   if (e.key === "Enter" && !e.shiftKey) {
     e.preventDefault();
@@ -45,6 +58,7 @@ function sendMessage() {
       const reply = data.reply || "Sorry, something went wrong.";
       appendMessage("bot", reply, data.images || [], data.links || [], data.page_links || [], data.show_browse || false, data.show_merchant_btns || false, data.show_contact_btns || false);
       history.push({ role: "assistant", content: reply });
+      try { localStorage.setItem("thyaga_chat_history", JSON.stringify(history)); } catch(e) {}
     })
     .catch(() => {
       typingEl.remove();
